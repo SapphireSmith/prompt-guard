@@ -39,5 +39,8 @@ export function sanitize(input: string, options: SanitizeOptions = {}): string {
         }
     }
 
-    return output.trim().replace(/\s+/g, " ");
+    return output
+        .replace(/\s+/g, " ")
+        .replace(/^[^\w]+/, "")   // remove leading punctuation
+        .trim();
 }
