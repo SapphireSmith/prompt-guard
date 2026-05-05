@@ -1,15 +1,52 @@
 import { sanitize } from "./sanitize";
-import { estimateTokens } from "./tokens";
+import { countTokens } from "./tokens";
 import { truncateToFit } from "./truncate";
 
-export function guard(input: string, maxTokens = 500) {
-    const { output, flagged } = sanitize(input);
-    const truncated = truncateToFit(output, maxTokens);
-    const tokens = estimateTokens(truncated);
+type SanitizeMode = "remove" | "replace";
+
+interface GuardOptions {
+    sanitize?: boolean;
+    sanitizeMode?: SanitizeMode;
+    limit?: number;
+    truncate?: boolean;
+    suffix?: string;
+}
+
+export function guard(input: string, options: GuardOptions = {}) {
+    const {
+        sanitize: shouldSanitize = true,
+        sanitizeMode = "remove",
+        limit = 4096,
+        truncate: shouldTruncate = true,
+        suffix = "..."
+    } = options;
+
+    const originalTokens = countTokens(input);
+
+    let processed = input;
+    let wasSanitized = false;
+    let wasTruncated = false;
+
+    if (shouldSanitize) {
+        const sanitized = sanitize(input, { mode: sanitizeMode });
+        if (sanitized !== input) {
+            wasSanitized = true;
+            processed = sanitized;
+        }
+    }
+
+    if (shouldTruncate && countTokens(processed) > limit) {
+        processed = truncateToFit(processed, { limit, suffix });
+        wasTruncated = true;
+    }
+
+    const outputTokens = countTokens(processed);
 
     return {
-        output: truncated,
-        tokens,
-        flagged
+        output: processed,
+        originalTokens,
+        outputTokens,
+        wasSanitized,
+        wasTruncated
     };
 }

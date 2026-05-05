@@ -1,5 +1,16 @@
-export declare function guard(input: string, maxTokens?: number): {
+type SanitizeMode = "remove" | "replace";
+interface GuardOptions {
+    sanitize?: boolean;
+    sanitizeMode?: SanitizeMode;
+    limit?: number;
+    truncate?: boolean;
+    suffix?: string;
+}
+export declare function guard(input: string, options?: GuardOptions): {
     output: string;
-    tokens: number;
-    flagged: boolean;
+    originalTokens: number;
+    outputTokens: number;
+    wasSanitized: boolean;
+    wasTruncated: boolean;
 };
+export {};

@@ -2,10 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.truncateToFit = truncateToFit;
 const tokens_1 = require("./tokens");
-function truncateToFit(input, maxTokens) {
-    let text = input;
-    while ((0, tokens_1.estimateTokens)(text) > maxTokens) {
-        text = text.slice(0, -1);
+function truncateToFit(input, options) {
+    const { limit, suffix = "..." } = options;
+    if ((0, tokens_1.countTokens)(input) <= limit)
+        return input;
+    const words = input.split(" ");
+    let result = "";
+    for (const word of words) {
+        const next = result ? result + " " + word : word;
+        if ((0, tokens_1.countTokens)(next + suffix) > limit)
+            break;
+        result = next;
     }
-    return text;
+    return result + suffix;
 }

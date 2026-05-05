@@ -1,11 +1,25 @@
-import { estimateTokens } from "./tokens";
+import { countTokens } from "./tokens";
 
-export function truncateToFit(input: string, maxTokens: number) {
-    let text = input;
+interface TruncateOptions {
+    limit: number;
+    suffix?: string;
+}
 
-    while (estimateTokens(text) > maxTokens) {
-        text = text.slice(0, -1);
+export function truncateToFit(input: string, options: TruncateOptions): string {
+    const { limit, suffix = "..." } = options;
+
+    if (countTokens(input) <= limit) return input;
+
+    const words = input.split(" ");
+    let result = "";
+
+    for (const word of words) {
+        const next = result ? result + " " + word : word;
+
+        if (countTokens(next + suffix) > limit) break;
+
+        result = next;
     }
 
-    return text;
+    return result + suffix;
 }
