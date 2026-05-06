@@ -1,5 +1,7 @@
-node_modules
+node_modules/
+dist/
 .env
-*.logdist
-node_modules 
+*.log
+
 test.js
+test-install/

@@ -1,11 +1,15 @@
 {
-  "name": "prompt_guard",
+  "name": "promptguard-js",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc",
     "test": "jest",
-    "build": "tsc"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": "",
